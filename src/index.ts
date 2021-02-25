@@ -1,2 +1,5 @@
+import config from "./herlpers/config";
+
 import io from "./methods/index";
-io.listen(8888);
+
+io.listen(config.PORT);
