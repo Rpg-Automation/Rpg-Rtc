@@ -1,4 +1,4 @@
 
-export interface ITest {
+export interface IRequest {
 	test: string
 }
