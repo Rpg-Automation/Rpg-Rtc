@@ -13,9 +13,14 @@ io.on("connection", (socket: Socket) => {
 	// allows the client to make a request, whilst obfisctaing
 	// the endpoints and request data
 	socket.on("request", async (request: T.IRequest) => {
-		log.info(request);
-		const response: AxiosResponse = await Rest.Get();
-		socket.emit("response", response);
+		try {
+			log.info(request);
+			const response: AxiosResponse = await Rest.Get();
+			socket.emit("response", response);
+		} catch (error) {
+			log.error(error);
+			socket.emit("error", error);
+		}
 	});
 
 	// handler on client disconnection
