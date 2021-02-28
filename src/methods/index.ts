@@ -10,6 +10,14 @@ import io from "../services/server";
 io.on("connection", (socket: Socket) => {
 	log.info(`${new Date} ${socket.id} connected`);
 
+	socket.on("join", (id: string) => {
+		socket.join(id);
+	});
+
+	socket.on("whisper", (id: string) => {
+		io.to(id).emit("room_msg", `${id} waassup`);
+	});
+
 	// allows the client to make a request, whilst obfisctaing
 	// the endpoints and request data
 	socket.on("request", async (request: T.IRequest) => {

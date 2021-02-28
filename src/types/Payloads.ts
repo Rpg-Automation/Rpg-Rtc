@@ -8,3 +8,7 @@ export interface IPaylaod {
 	status: number,
 	data: any
 }
+
+export interface IPost {
+	data: any
+}
