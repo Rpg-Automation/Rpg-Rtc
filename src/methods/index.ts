@@ -1,10 +1,10 @@
 import { Socket } from "socket.io";
+import { AxiosResponse } from "axios";
 
 import Rest from "../services/rest";
 import log from "../services/logger";
 import * as T from "../types/Payloads";
 import io from "../services/server";
-import { AxiosResponse } from "axios";
 
 // Generic socket wrapper
 io.on("connection", (socket: Socket) => {
@@ -16,10 +16,10 @@ io.on("connection", (socket: Socket) => {
 		try {
 			log.info(request);
 			const response: AxiosResponse = await Rest.Get();
-			socket.emit("response", response);
+			socket.emit("response", { ok: true, status: 200, data: response } as T.IPaylaod);
 		} catch (error) {
 			log.error(error);
-			socket.emit("error", error);
+			socket.emit("error", { ok: false, status: 500, data: error } as T.IPaylaod);
 		}
 	});
 
