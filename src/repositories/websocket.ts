@@ -11,7 +11,7 @@ export default class WebSocket {
 	private static connections: T.IClient[] = [];
 
 	public static Respond(socket: Socket, payload: T.IPaylaod): void {
-		socket.emit("response", { ok: payload.ok, status: payload.status, data: payload.data });
+		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
 
 	public static Connect(socket: Socket): void {
@@ -43,21 +43,22 @@ export default class WebSocket {
 
 			io.to(user.id).emit("dm", { ok: false, status: 500, data: dm.message } as T.IPaylaod);
 			// prompt sender
-			WebSocket.Respond(socket, { ok: true, status: 200, data: "message sent" });
+			WebSocket.Respond(socket, { ok: true, data: "message sent" });
 		} catch (error) {
 			log.error(error);
-			WebSocket.Respond(socket, { ok: false, status: 500, data: error });
+			WebSocket.Respond(socket, { ok: false, data: error });
 		}
 	}
 
 	public static async Request(socket: Socket, request: T.IRequest): Promise<void> {
 		try {
 			log.info(request);
+			console.log(request);
 			const _response: AxiosResponse = await Rest.Get();
-			WebSocket.Respond(socket, { ok: true, status: 200, data: _response });
+			WebSocket.Respond(socket, { ok: true, data: _response });
 		} catch (error) {
 			log.error(error);
-			WebSocket.Respond(socket, { ok: false, status: 500, data: error });
+			WebSocket.Respond(socket, { ok: false, data: error });
 		}
 	}
 }

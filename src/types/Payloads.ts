@@ -5,7 +5,6 @@ export interface IRequest {
 
 export interface IPaylaod {
 	ok: boolean,
-	status: number,
 	data: any
 }
 
