@@ -41,7 +41,21 @@ export default class WebSocket {
 			const user: T.IClient = WebSocket.connections.find(a => a.id === dm.id);
 			if (!user) throw "this user does not exist";
 
-			io.to(user.id).emit("dm", { ok: false, status: 500, data: dm.message } as T.IPaylaod);
+			io.to(user.id).emit("dm", { ok: false, data: dm.message } as T.IPaylaod);
+			// prompt sender
+			WebSocket.Respond(socket, { ok: true, data: "message sent" });
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static Stop(socket: Socket, id: string): void {
+		try {
+			const user: T.IClient = WebSocket.connections.find(a => a.id === id);
+			if (!user) throw "this user does not exist";
+
+			io.to(user.id).emit("client-stop", "blah");
 			// prompt sender
 			WebSocket.Respond(socket, { ok: true, data: "message sent" });
 		} catch (error) {

@@ -20,6 +20,10 @@ io.on("connection", (socket: Socket) => {
 		WebSocket.Request(socket, request);
 	});
 
+	socket.on("stop-loop", (id: string) => {
+		WebSocket.Stop(socket, id);
+	});
+
 	// disconnect
 	socket.on("disconnect", () => {
 		WebSocket.Disconnect(socket);
