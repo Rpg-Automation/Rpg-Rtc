@@ -42,6 +42,7 @@ export default class WebSocket {
 	public static async OauthCred(socket: Socket, discordID: string): Promise<void> {
 		try {
 			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
+			console.log(WebSocket.connections);
 			await socket.join(discordID);
 			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
 		} catch (error) {
