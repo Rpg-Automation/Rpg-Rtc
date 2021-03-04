@@ -55,7 +55,6 @@ export default class WebSocket {
 	public static async OauthCred(socket: Socket, discordId: string): Promise<void> {
 		try {
 			await socket.join(discordId);
-			console.log(discordId);
 			io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
 		} catch (error) {
 			log.error(error);
@@ -65,12 +64,16 @@ export default class WebSocket {
 
 	public static Stop(socket: Socket, id: string): void {
 		try {
-			const user: T.IClient = WebSocket.connections.find(a => a.id === id);
-			if (!user) throw "this user does not exist";
+			io.to(id).emit("client-stop");
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
 
-			io.to(user.id).emit("client-stop", "blah");
-			// prompt sender
-			WebSocket.Respond(socket, { ok: true, data: "message sent" });
+	public static Start(socket: Socket, id: string): void {
+		try {
+			io.to(id).emit("client-start");
 		} catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });

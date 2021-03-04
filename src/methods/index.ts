@@ -24,8 +24,12 @@ io.on("connection", (socket: Socket) => {
 		WebSocket.Request(socket, request);
 	});
 
-	socket.on("stop-loop", (id: string) => {
+	socket.on("client-stop", (id: string) => {
 		WebSocket.Stop(socket, id);
+	});
+
+	socket.on("client-start", (id: string) => {
+		WebSocket.Start(socket, id);
 	});
 
 	// disconnect
