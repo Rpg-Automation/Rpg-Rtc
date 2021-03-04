@@ -21,11 +21,11 @@ io.on("connection", async (socket: Socket) => {
 		WebSocket.Request(socket, request);
 	});
 
-	socket.on("client-stop", (id: string) => {
+	socket.on("request-stop", (id: string) => {
 		WebSocket.Stop(socket, id);
 	});
 
-	socket.on("client-start", (id: string) => {
+	socket.on("request-start", (id: string) => {
 		WebSocket.Start(socket, id);
 	});
 
