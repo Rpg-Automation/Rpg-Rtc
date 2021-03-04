@@ -14,17 +14,6 @@ export default class WebSocket {
 		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
 
-	public static Connect(socket: Socket, discordID: string): void {
-		try {
-			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
-			socket.join(discordID);
-			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
-			console.log(WebSocket.connections);
-		} catch (error) {
-			log.error(error);
-		}
-	}
-
 	public static Disconnect(socket: Socket): void {
 		try {
 			WebSocket.connections = WebSocket.connections.filter(a => a.id !== socket.id);
@@ -50,15 +39,16 @@ export default class WebSocket {
 		}
 	}
 
-	//public static async OauthCred(socket: Socket, discordId: string): Promise<void> {
-	//	try {
-	//		await socket.join(discordId);
-	//		io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
-	//	} catch (error) {
-	//		log.error(error);
-	//		WebSocket.Respond(socket, { ok: false, data: error });
-	//	}
-	//}
+	public static async OauthCred(socket: Socket, discordID: string): Promise<void> {
+		try {
+			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
+			await socket.join(discordID);
+			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
 
 	public static Stop(socket: Socket, id: string): void {
 		try {
