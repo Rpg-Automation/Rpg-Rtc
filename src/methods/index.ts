@@ -7,6 +7,7 @@ import io from "../services/server";
 // Generic socket wrapper
 io.on("connection", (socket: Socket) => {
 
+	console.log(socket);
 	// initial connect
 	WebSocket.Connect(socket);
 
