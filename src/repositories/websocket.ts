@@ -10,17 +10,15 @@ export default class WebSocket {
 
 	private static connections: T.IClient[] = [];
 
-	private static oauthConnections: T.OauthCred[] = [];
-
 	public static Respond(socket: Socket, payload: T.IPaylaod): void {
 		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
 
-	public static Connect(socket: Socket): void {
+	public static Connect(socket: Socket, discordID: string): void {
 		try {
-			WebSocket.connections.push({ id: socket.id, connected: new Date() });
-			// prob remove later
-			log.info(`${new Date} ${socket.id} connected`);
+			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
+			socket.join(discordID);
+			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
 			console.log(WebSocket.connections);
 		} catch (error) {
 			log.error(error);
@@ -52,15 +50,15 @@ export default class WebSocket {
 		}
 	}
 
-	public static async OauthCred(socket: Socket, discordId: string): Promise<void> {
-		try {
-			await socket.join(discordId);
-			io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
-		} catch (error) {
-			log.error(error);
-			WebSocket.Respond(socket, { ok: false, data: error });
-		}
-	}
+	//public static async OauthCred(socket: Socket, discordId: string): Promise<void> {
+	//	try {
+	//		await socket.join(discordId);
+	//		io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
+	//	} catch (error) {
+	//		log.error(error);
+	//		WebSocket.Respond(socket, { ok: false, data: error });
+	//	}
+	//}
 
 	public static Stop(socket: Socket, id: string): void {
 		try {
@@ -83,7 +81,6 @@ export default class WebSocket {
 	public static async Request(socket: Socket, request: T.IRequest): Promise<void> {
 		try {
 			log.info(request);
-			console.log(request);
 			const _response: AxiosResponse = await Rest.Get();
 			WebSocket.Respond(socket, { ok: true, data: _response });
 		} catch (error) {

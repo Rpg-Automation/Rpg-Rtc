@@ -14,6 +14,7 @@ export interface IPost {
 
 export interface IClient {
 	id: string,
+	discordID: string,
 	connected: Date
 }
 

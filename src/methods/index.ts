@@ -5,15 +5,14 @@ import * as T from "../types/Payloads";
 import io from "../services/server";
 
 // Generic socket wrapper
-io.on("connection", (socket: Socket) => {
+io.on("connection", (socket: Socket, discordID: string) => {
 
-	console.log(socket);
 	// initial connect
-	WebSocket.Connect(socket);
+	WebSocket.Connect(socket, discordID);
 
-	socket.on("oauth-creds", async (discordId: string) => {
-		await WebSocket.OauthCred(socket, discordId);
-	});
+	//socket.on("oauth-creds", async (discordId: string) => {
+	//	await WebSocket.OauthCred(socket, discordId);
+	//});
 
 	// dm
 	socket.on("whisper", (dm: T.IWhisper) => {
