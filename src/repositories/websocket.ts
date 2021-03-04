@@ -52,9 +52,10 @@ export default class WebSocket {
 		}
 	}
 
-	public static OauthCred(socket: Socket, discordId: string): void {
+	public static async OauthCred(socket: Socket, discordId: string): Promise<void> {
 		try {
-			socket.join(discordId);
+			await socket.join(discordId);
+			console.log(discordId);
 			io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
 		} catch (error) {
 			log.error(error);

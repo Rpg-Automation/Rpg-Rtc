@@ -10,8 +10,8 @@ io.on("connection", (socket: Socket) => {
 	// initial connect
 	WebSocket.Connect(socket);
 
-	socket.on("oauth-creds", (discordId: string) => {
-		WebSocket.OauthCred(socket, discordId);
+	socket.on("oauth-creds", async (discordId: string) => {
+		await WebSocket.OauthCred(socket, discordId);
 	});
 
 	// dm
