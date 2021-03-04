@@ -10,6 +10,10 @@ io.on("connection", (socket: Socket) => {
 	// initial connect
 	WebSocket.Connect(socket);
 
+	socket.on("oauth-creds", (discordId: string) => {
+		WebSocket.OauthCred(socket, discordId);
+	});
+
 	// dm
 	socket.on("whisper", (dm: T.IWhisper) => {
 		WebSocket.Whisper(socket, dm);

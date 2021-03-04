@@ -10,6 +10,8 @@ export default class WebSocket {
 
 	private static connections: T.IClient[] = [];
 
+	private static oauthConnections: T.OauthCred[] = [];
+
 	public static Respond(socket: Socket, payload: T.IPaylaod): void {
 		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
@@ -44,6 +46,16 @@ export default class WebSocket {
 			io.to(user.id).emit("dm", { ok: false, data: dm.message } as T.IPaylaod);
 			// prompt sender
 			WebSocket.Respond(socket, { ok: true, data: "message sent" });
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static OauthCred(socket: Socket, discordId: string): void {
+		try {
+			socket.join(discordId);
+			io.to(discordId).emit("success", `${new Date()} you have connected ${discordId}`);
 		} catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });

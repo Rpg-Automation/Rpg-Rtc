@@ -21,3 +21,10 @@ export interface IWhisper {
 	id: string,
 	message: string
 }
+
+export interface OauthCred {
+	socketId: string,
+	id: string,
+	userName: string,
+	disc: number
+}
