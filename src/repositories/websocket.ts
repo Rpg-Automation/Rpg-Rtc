@@ -10,6 +10,22 @@ export default class WebSocket {
 
 	private static connections: T.IClient[] = [];
 
+	public static async Connected(socket: Socket): Promise<void> {
+		try {
+			const { discordID } = socket.handshake.query;
+			if (discordID) {
+				const ID: string = Array.isArray(discordID) ? discordID[0] : discordID;
+
+				if (ID) {
+					await WebSocket.OauthCred(socket, ID);
+				}
+			}
+		}
+		catch (error) {
+			log.error(error);
+		}
+	}
+
 	public static Respond(socket: Socket, payload: T.IPaylaod): void {
 		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}

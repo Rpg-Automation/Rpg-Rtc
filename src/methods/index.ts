@@ -7,14 +7,7 @@ import io from "../services/server";
 // Generic socket wrapper
 io.on("connection", async (socket: Socket) => {
 
-	const { discordID } = socket.handshake.query;
-	if (discordID) {
-		const ID: string = Array.isArray(discordID) ? discordID[0] : discordID;
-
-		if (ID) {
-			await WebSocket.OauthCred(socket, ID);
-		}
-	}
+	await WebSocket.Connected(socket);
 
 	socket.on("connected", async (discordID: string) => {
 		console.log(discordID);
