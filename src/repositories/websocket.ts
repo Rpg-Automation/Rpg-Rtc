@@ -85,6 +85,24 @@ export default class WebSocket {
 		}
 	}
 
+	public static Pause(socket: Socket, id: string): void {
+		try {
+			io.to(id).emit("client-pause");
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static Resume(socket: Socket, id: string): void {
+		try {
+			io.to(id).emit("client-resume");
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
 	public static async Request(socket: Socket, request: T.IRequest): Promise<void> {
 		try {
 			log.info(request);

@@ -35,6 +35,14 @@ io.on("connection", async (socket: Socket) => {
 		WebSocket.Start(socket, id);
 	});
 
+	socket.on("request-pause", (id: string) => {
+		WebSocket.Pause(socket, id);
+	});
+
+	socket.on("request-resume", (id: string) => {
+		WebSocket.Resume(socket, id);
+	});
+
 	// disconnect
 	socket.on("disconnect", () => {
 		WebSocket.Disconnect(socket);
