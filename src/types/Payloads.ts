@@ -3,7 +3,7 @@ export interface IRequest {
 	test: string
 }
 
-export interface IPaylaod {
+export interface IPayload {
 	ok: boolean,
 	data: any
 }
@@ -28,4 +28,14 @@ export interface OauthCred {
 	id: string,
 	userName: string,
 	disc: number
+}
+
+export interface Cooldowns {
+	id: string,
+	commands: Command[]
+}
+
+export interface Command {
+	type: string;
+	available: Date;
 }

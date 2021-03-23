@@ -43,6 +43,10 @@ io.on("connection", async (socket: Socket) => {
 		WebSocket.Resume(socket, id);
 	});
 
+	socket.on("update-cooldowns", (cooldowns: T.Cooldowns) => {
+		WebSocket.Cooldowns(socket, cooldowns);
+	});
+
 	// disconnect
 	socket.on("disconnect", () => {
 		WebSocket.Disconnect(socket);

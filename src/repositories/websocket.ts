@@ -26,7 +26,7 @@ export default class WebSocket {
 		}
 	}
 
-	public static Respond(socket: Socket, payload: T.IPaylaod): void {
+	public static Respond(socket: Socket, payload: T.IPayload): void {
 		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
 
@@ -46,7 +46,7 @@ export default class WebSocket {
 			const user: T.IClient = WebSocket.connections.find(a => a.id === dm.id);
 			if (!user) throw "this user does not exist";
 
-			io.to(user.id).emit("dm", { ok: false, data: dm.message } as T.IPaylaod);
+			io.to(user.id).emit("dm", { ok: false, data: dm.message } as T.IPayload);
 			// prompt sender
 			WebSocket.Respond(socket, { ok: true, data: "message sent" });
 		} catch (error) {
@@ -109,6 +109,16 @@ export default class WebSocket {
 			const _response: AxiosResponse = await Rest.Get();
 			WebSocket.Respond(socket, { ok: true, data: _response });
 		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static Cooldowns(socket: Socket, cooldowns: T.Cooldowns): void {
+		try {
+			io.to(cooldowns.id).emit("client-cooldowns", cooldowns.commands);
+		}
+		catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });
 		}
