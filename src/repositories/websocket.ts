@@ -5,6 +5,7 @@ import * as T from "../types/Payloads";
 import Rest from "../services/rest";
 import io from "../services/server";
 import log from "../services/logger";
+import Jwt from "../helpers/jwt";
 
 export default class WebSocket {
 
@@ -12,12 +13,12 @@ export default class WebSocket {
 
 	public static async Connected(socket: Socket): Promise<void> {
 		try {
-			const { discordID } = socket.handshake.query;
-			if (discordID) {
-				const ID: string = Array.isArray(discordID) ? discordID[0] : discordID;
+			const { client_token } = socket.handshake.query;
+			if (client_token) {
+				const token: string = Array.isArray(client_token) ? client_token[0] : client_token;
 
-				if (ID) {
-					await WebSocket.OauthCred(socket, ID);
+				if (token) {
+					await WebSocket.OauthCred(socket, token);
 				}
 			}
 		}
@@ -26,8 +27,18 @@ export default class WebSocket {
 		}
 	}
 
-	public static Respond(socket: Socket, payload: T.IPayload): void {
-		socket.emit("response", { ok: payload.ok, data: payload.data });
+	public static async OauthCred(socket: Socket, token: string): Promise<void> {
+		try {
+			const discordID: string = await Jwt.GetID(token);
+
+			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
+			console.log(WebSocket.connections);
+			await socket.join(discordID);
+			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
 	}
 
 	public static Disconnect(socket: Socket): void {
@@ -39,6 +50,10 @@ export default class WebSocket {
 		} catch (error) {
 			log.error(error);
 		}
+	}
+
+	public static Respond(socket: Socket, payload: T.IPayload): void {
+		socket.emit("response", { ok: payload.ok, data: payload.data });
 	}
 
 	public static Whisper(socket: Socket, dm: T.IWhisper): void {
@@ -55,12 +70,33 @@ export default class WebSocket {
 		}
 	}
 
-	public static async OauthCred(socket: Socket, discordID: string): Promise<void> {
+	public static async Request(socket: Socket, request: T.IRequest): Promise<void> {
 		try {
-			WebSocket.connections.push({ id: socket.id, discordID: discordID, connected: new Date() });
-			console.log(WebSocket.connections);
-			await socket.join(discordID);
-			io.to(discordID).emit("success", `${new Date()} you have connected ${discordID}`);
+			log.info(request);
+			const _response: AxiosResponse = await Rest.Get();
+			WebSocket.Respond(socket, { ok: true, data: _response });
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static async AuthorizedStop(socket: Socket, token: string): Promise<void> {
+		try {
+			const id: string = await Jwt.GetID(token);
+
+			io.to(id).emit("client-stop");
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static async AuthorizedStart(socket: Socket, token: string): Promise<void> {
+		try {
+			const id: string = await Jwt.GetID(token);
+
+			io.to(id).emit("client-start");
 		} catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });
@@ -103,22 +139,33 @@ export default class WebSocket {
 		}
 	}
 
-	public static async Request(socket: Socket, request: T.IRequest): Promise<void> {
+	public static Cooldowns(socket: Socket, cooldowns: T.Cooldowns): void {
 		try {
-			log.info(request);
-			const _response: AxiosResponse = await Rest.Get();
-			WebSocket.Respond(socket, { ok: true, data: _response });
+			io.to(cooldowns.id).emit("client-cooldowns", cooldowns.commands);
+		}
+		catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
+	public static async RequestStatus(socket: Socket, token: string): Promise<void> {
+		try {
+			const id: string = await Jwt.GetID(token);
+
+			io.to(id).emit("request-status");
 		} catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });
 		}
 	}
 
-	public static Cooldowns(socket: Socket, cooldowns: T.Cooldowns): void {
+	public static async Status(socket: Socket, token: string, status: boolean): Promise<void> {
 		try {
-			io.to(cooldowns.id).emit("client-cooldowns", cooldowns.commands);
-		}
-		catch (error) {
+			const id: string = await Jwt.GetID(token);
+
+			io.to(id).emit("update-status", status);
+		} catch (error) {
 			log.error(error);
 			WebSocket.Respond(socket, { ok: false, data: error });
 		}

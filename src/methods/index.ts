@@ -9,12 +9,12 @@ io.on("connection", async (socket: Socket) => {
 
 	await WebSocket.Connected(socket);
 
-	socket.on("connected", async (discordID: string) => {
-		console.log(discordID);
+	socket.on("connected", async (token: string) => {
+		console.log(token);
 	});
 
-	socket.on("oauth-creds", async (discordId: string) => {
-		await WebSocket.OauthCred(socket, discordId);
+	socket.on("oauth-creds", async (token: string) => {
+		await WebSocket.OauthCred(socket, token);
 	});
 
 	// dm
@@ -25,6 +25,14 @@ io.on("connection", async (socket: Socket) => {
 	// fetch api data
 	socket.on("request", async (request: T.IRequest) => {
 		WebSocket.Request(socket, request);
+	});
+
+	socket.on("dashboard-stop", (token: string) => {
+		WebSocket.AuthorizedStop(socket, token);
+	});
+
+	socket.on("dashboard-start", (token: string) => {
+		WebSocket.AuthorizedStart(socket, token);
 	});
 
 	socket.on("request-stop", (id: string) => {
@@ -43,8 +51,16 @@ io.on("connection", async (socket: Socket) => {
 		WebSocket.Resume(socket, id);
 	});
 
+	socket.on("request-status", (token: string) => {
+		WebSocket.RequestStatus(socket, token);
+	});
+
 	socket.on("update-cooldowns", (cooldowns: T.Cooldowns) => {
 		WebSocket.Cooldowns(socket, cooldowns);
+	});
+
+	socket.on("update-status", (token: string, status: boolean) => {
+		WebSocket.Status(socket, token, status);
 	});
 
 	// disconnect
