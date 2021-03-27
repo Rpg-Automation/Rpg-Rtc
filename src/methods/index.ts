@@ -55,12 +55,16 @@ io.on("connection", async (socket: Socket) => {
 		WebSocket.RequestStatus(socket, token);
 	});
 
-	socket.on("update-cooldowns", (cooldowns: T.Cooldowns) => {
-		WebSocket.Cooldowns(socket, cooldowns);
-	});
-
 	socket.on("update-status", (token: string, status: boolean) => {
 		WebSocket.Status(socket, token, status);
+	});
+
+	socket.on("request-cooldowns", (token: string) => {
+		WebSocket.RequestCooldowns(socket, token);
+	});
+
+	socket.on("update-cooldowns", (cooldowns: T.Cooldowns) => {
+		WebSocket.Cooldowns(socket, cooldowns);
 	});
 
 	// disconnect

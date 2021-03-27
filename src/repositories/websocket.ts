@@ -139,6 +139,17 @@ export default class WebSocket {
 		}
 	}
 
+	public static async RequestCooldowns(socket: Socket, token: string): Promise<void> {
+		try {
+			const id: string = await Jwt.GetID(token);
+
+			io.to(id).emit("request-cooldowns");
+		} catch (error) {
+			log.error(error);
+			WebSocket.Respond(socket, { ok: false, data: error });
+		}
+	}
+
 	public static Cooldowns(socket: Socket, cooldowns: T.Cooldowns): void {
 		try {
 			io.to(cooldowns.id).emit("client-cooldowns", cooldowns.commands);
