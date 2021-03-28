@@ -37,5 +37,5 @@ export interface Cooldowns {
 
 export interface Command {
 	type: number;
-	available: Date;
+	cooldown: number;
 }
